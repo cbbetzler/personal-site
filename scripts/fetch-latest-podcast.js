@@ -63,6 +63,9 @@ async function main() {
   const data = await res.json();
 
   if (data.currently_playing_type !== "episode" || !data.item) {
+    // TEMP DEBUG: currently_playing_type has come back "episode" with a
+    // falsy item before — dump the raw response to see why.
+    console.log("TEMP DEBUG raw currently-playing response:", JSON.stringify(data, null, 2));
     console.log(`Currently playing "${data.currently_playing_type}", not a podcast — leaving existing data as-is.`);
     return;
   }
