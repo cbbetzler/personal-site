@@ -4,13 +4,17 @@
 // podcast episode — writes it to data/currently-listening.json for the
 // static site to fetch client-side.
 //
-// Spotify's `recently-played` history endpoint does not reliably surface
-// podcast episodes (confirmed empirically: it kept returning only music
-// tracks even during active podcast playback). `currently-playing` does
-// support episodes via `currently_playing_type`, so that's the source of
-// truth here — which means this only captures an episode if you happen to
-// be actively listening at the moment this runs. The workflow runs every
-// 15 minutes to make that reasonably likely. If nothing's playing, or
+// Two-step lookup, found empirically:
+//   1. GET /v1/me/player tells us whether something is playing and whether
+//      it's an episode (currently_playing_type), but its own `item` field
+//      comes back null for podcast episodes — a known Spotify API gap,
+//      reproduced across scopes and devices.
+//   2. GET /v1/me/player/queue's `currently_playing` field returns the same
+//      episode with full metadata (title, show, url, images), so that's
+//      the actual data source once step 1 confirms an episode is playing.
+//
+// This only captures an episode if you're actively listening at the moment
+// this runs (every 15 min — see the workflow). If nothing's playing, or
 // you're playing music, the existing data file is left untouched so the
 // site keeps showing the last episode it caught.
 
@@ -47,45 +51,36 @@ async function getAccessToken() {
 
 async function main() {
   const accessToken = await getAccessToken();
+  const authHeader = { Authorization: `Bearer ${accessToken}` };
 
-  // Using the full player-state endpoint rather than /currently-playing:
-  // currently-playing was observed returning currently_playing_type:
-  // "episode" with item: null (a known Spotify API gap for podcasts) —
-  // testing whether this endpoint returns complete episode metadata instead.
-  const res = await fetch("https://api.spotify.com/v1/me/player", {
-    headers: { Authorization: `Bearer ${accessToken}` },
-  });
+  const stateRes = await fetch("https://api.spotify.com/v1/me/player", { headers: authHeader });
 
-  if (res.status === 204) {
+  if (stateRes.status === 204) {
     console.log("Nothing currently playing — leaving existing data as-is.");
     return;
   }
-  if (!res.ok) {
-    throw new Error(`currently-playing request failed: ${res.status} ${await res.text()}`);
+  if (!stateRes.ok) {
+    throw new Error(`player state request failed: ${stateRes.status} ${await stateRes.text()}`);
   }
 
-  const data = await res.json();
+  const state = await stateRes.json();
 
-  if (data.currently_playing_type !== "episode" || !data.item) {
-    // TEMP DEBUG: currently_playing_type has come back "episode" with a
-    // falsy item before, regardless of device — try /player/queue too,
-    // which sometimes populates `currently_playing` where /me/player doesn't.
-    console.log("TEMP DEBUG raw currently-playing response:", JSON.stringify(data, null, 2));
-
-    const queueRes = await fetch("https://api.spotify.com/v1/me/player/queue", {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
-    console.log("TEMP DEBUG queue endpoint status:", queueRes.status);
-    if (queueRes.ok) {
-      const queueData = await queueRes.json();
-      console.log("TEMP DEBUG queue currently_playing:", JSON.stringify(queueData.currently_playing, null, 2));
-    }
-
-    console.log(`Currently playing "${data.currently_playing_type}", not a podcast — leaving existing data as-is.`);
+  if (!state.is_playing || state.currently_playing_type !== "episode") {
+    console.log(`Currently playing "${state.currently_playing_type}", not an active podcast — leaving existing data as-is.`);
     return;
   }
 
-  const episode = data.item;
+  const queueRes = await fetch("https://api.spotify.com/v1/me/player/queue", { headers: authHeader });
+  if (!queueRes.ok) {
+    throw new Error(`queue request failed: ${queueRes.status} ${await queueRes.text()}`);
+  }
+
+  const episode = (await queueRes.json()).currently_playing;
+  if (!episode) {
+    console.log("Queue endpoint returned no currently_playing episode — leaving existing data as-is.");
+    return;
+  }
+
   const payload = {
     title: episode.name,
     show: episode.show ? episode.show.name : null,
