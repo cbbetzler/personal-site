@@ -2,7 +2,7 @@ name: Update currently-listening podcast
 
 on:
   schedule:
-    - cron: "0 * * * *" # hourly
+    - cron: "*/15 * * * *" # every 15 min — currently-playing only catches active sessions
   workflow_dispatch: {}
 
 permissions:

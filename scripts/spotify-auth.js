@@ -8,7 +8,9 @@
 //        SPOTIFY_CLIENT_ID=xxx SPOTIFY_CLIENT_SECRET=yyy node scripts/spotify-auth.js
 //   3. Open the printed URL, log in, approve access.
 //   4. Copy the refresh token this script prints into your GitHub repo's
-//      Settings → Secrets and variables → Actions, as SPOTIFY_REFRESH_TOKEN.
+//      Settings → Secrets and variables → Actions, as SPOTIFY_REFRESH_TOKEN
+//      (overwrite the existing value if you're re-running this after a
+//      scope change).
 //
 // Never commit your client secret or refresh token to the repo.
 
@@ -17,7 +19,7 @@ const { URL } = require("url");
 
 const PORT = 8888;
 const REDIRECT_URI = `http://127.0.0.1:${PORT}/callback`;
-const SCOPE = "user-read-recently-played";
+const SCOPE = "user-read-currently-playing";
 
 const clientId = process.env.SPOTIFY_CLIENT_ID;
 const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;

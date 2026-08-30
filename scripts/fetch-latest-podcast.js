@@ -1,11 +1,18 @@
 #!/usr/bin/env node
 // Runs on a schedule via .github/workflows/update-spotify.yml. Refreshes a
-// Spotify access token, finds the most recently played podcast episode
-// (filtering out music tracks), and writes it to
-// data/currently-listening.json for the static site to fetch client-side.
+// Spotify access token, checks what's currently playing, and — if it's a
+// podcast episode — writes it to data/currently-listening.json for the
+// static site to fetch client-side.
 //
-// Leaves the existing data file untouched if no episode is found in the
-// recent history window, so the site never regresses to empty on a quiet day.
+// Spotify's `recently-played` history endpoint does not reliably surface
+// podcast episodes (confirmed empirically: it kept returning only music
+// tracks even during active podcast playback). `currently-playing` does
+// support episodes via `currently_playing_type`, so that's the source of
+// truth here — which means this only captures an episode if you happen to
+// be actively listening at the moment this runs. The workflow runs every
+// 15 minutes to make that reasonably likely. If nothing's playing, or
+// you're playing music, the existing data file is left untouched so the
+// site keeps showing the last episode it caught.
 
 const fs = require("fs");
 const path = require("path");
@@ -38,77 +45,34 @@ async function getAccessToken() {
   return data.access_token;
 }
 
-function isEpisode(item) {
-  // The recently-played history nests the played item under `track`
-  // regardless of whether it's a music track or a podcast episode. Episodes
-  // carry `type: "episode"` and a `show` object instead of `album`/`artists`.
-  const t = item.track;
-  return Boolean(t && (t.type === "episode" || t.show));
-}
-
 async function main() {
   const accessToken = await getAccessToken();
 
-  const res = await fetch("https://api.spotify.com/v1/me/player/recently-played?limit=50", {
+  const res = await fetch("https://api.spotify.com/v1/me/player/currently-playing", {
     headers: { Authorization: `Bearer ${accessToken}` },
   });
-  const data = await res.json();
 
-  // TEMP DEBUG: check currently-playing too, to see if episodes show up there
-  // even when they don't show up in recently-played.
-  const cpRes = await fetch("https://api.spotify.com/v1/me/player/currently-playing", {
-    headers: { Authorization: `Bearer ${accessToken}` },
-  });
-  console.log("currently-playing status:", cpRes.status);
-  if (cpRes.status === 200) {
-    const cpData = await cpRes.json();
-    console.log(
-      "currently-playing:",
-      JSON.stringify(
-        {
-          currently_playing_type: cpData.currently_playing_type,
-          is_playing: cpData.is_playing,
-          itemName: cpData.item && cpData.item.name,
-          itemType: cpData.item && cpData.item.type,
-        },
-        null,
-        2
-      )
-    );
+  if (res.status === 204) {
+    console.log("Nothing currently playing — leaving existing data as-is.");
+    return;
+  }
+  if (!res.ok) {
+    throw new Error(`currently-playing request failed: ${res.status} ${await res.text()}`);
   }
 
-  const items = data.items || [];
+  const data = await res.json();
 
-  // TEMP DEBUG: remove once we've confirmed episodes show up here.
-  console.log(
-    "recently-played raw items:",
-    JSON.stringify(
-      items.map((i) => ({
-        name: i.track && i.track.name,
-        type: i.track && i.track.type,
-        hasShow: Boolean(i.track && i.track.show),
-        hasAlbum: Boolean(i.track && i.track.album),
-        playedAt: i.played_at,
-      })),
-      null,
-      2
-    )
-  );
-
-  const latestEpisode = items.find(isEpisode);
-
-  if (!latestEpisode) {
-    console.log("No podcast episode found in recent listening history — leaving existing data as-is.");
+  if (data.currently_playing_type !== "episode" || !data.item) {
+    console.log(`Currently playing "${data.currently_playing_type}", not a podcast — leaving existing data as-is.`);
     return;
   }
 
-  const episode = latestEpisode.track;
+  const episode = data.item;
   const payload = {
     title: episode.name,
     show: episode.show ? episode.show.name : null,
     url: episode.external_urls ? episode.external_urls.spotify : null,
     image: episode.images && episode.images[0] ? episode.images[0].url : null,
-    playedAt: latestEpisode.played_at,
     updatedAt: new Date().toISOString(),
   };
 
