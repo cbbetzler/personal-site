@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carl Betzler — Product Leader, Physical AI</title>
+  <meta name="description" content="Carl Betzler — Product leader shaping the systems behind Physical AI: data pipelines, feedback loops, and eval systems." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header id="hero" class="hero">
+    <nav class="nav" aria-label="Primary">
+      <span class="nav-mark"><span class="nav-status" aria-hidden="true"></span>CB</span>
+      <ul class="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#currently">Currently</a></li>
+        <li><a href="#footer">Contact</a></li>
+      </ul>
+    </nav>
+
+    <div class="hero-inner">
+      <div class="hero-content">
+        <div class="identity">
+          <div class="avatar-frame">
+            <div class="avatar-inner">
+              <img src="assets/headshot.jpg" alt="Portrait of Carl Betzler" class="avatar-img" />
+              <div class="avatar-tint" aria-hidden="true"></div>
+            </div>
+          </div>
+          <p class="hero-name">Carl Betzler</p>
+        </div>
+        <h1 class="hero-role">Product leader shaping the systems behind Physical AI</h1>
+        <p class="hero-sub">Currently building AI platform @ <a href="https://nuro.ai" target="_blank" rel="noopener">Nuro</a></p>
+      </div>
+
+      <!-- Decorative schematic: P&ID pipe network (pipes, valve, gauge, flanges)
+           blended with a robotic-arm + lidar sensing diagram, drawn in one
+           consistent line weight. Purely visual, hidden from assistive tech. -->
+      <svg class="hero-graphic" viewBox="0 0 600 560" fill="none" aria-hidden="true" focusable="false">
+
+        <!-- drafting-sheet registration ticks -->
+        <g stroke="currentColor" stroke-width="1" opacity="0.25">
+          <path d="M14 20 H26 M20 14 V26" />
+          <path d="M574 540 H586 M580 534 V546" />
+        </g>
+
+        <!-- pipe run: horizontal -> vertical -> horizontal, double-line P&ID convention -->
+        <g class="schem-pipe" stroke="currentColor" stroke-width="1.75" stroke-linecap="square">
+          <line x1="40" y1="85" x2="240" y2="85" />
+          <line x1="40" y1="95" x2="240" y2="95" />
+          <line x1="235" y1="90" x2="235" y2="205" />
+          <line x1="245" y1="90" x2="245" y2="205" />
+          <line x1="240" y1="205" x2="460" y2="205" />
+          <line x1="240" y1="215" x2="460" y2="215" />
+          <g opacity="0.4">
+            <line x1="460" y1="205" x2="500" y2="205" />
+            <line x1="460" y1="215" x2="500" y2="215" />
+          </g>
+        </g>
+
+        <!-- flow-direction chevrons (P&ID convention) -->
+        <g stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.7">
+          <path d="M185 84 L192 90 L185 96" />
+          <path d="M405 204 L412 210 L405 216" />
+        </g>
+
+        <!-- bolted flange joints -->
+        <g class="schem-pipe" stroke="currentColor" stroke-width="1.5">
+          <circle cx="40" cy="90" r="10" />
+          <circle cx="240" cy="90" r="10" />
+          <circle cx="240" cy="210" r="10" />
+          <circle cx="460" cy="210" r="10" />
+        </g>
+        <g fill="currentColor" class="schem-pipe">
+          <circle cx="40" cy="80" r="1.3" /><circle cx="40" cy="100" r="1.3" /><circle cx="30" cy="90" r="1.3" /><circle cx="50" cy="90" r="1.3" />
+          <circle cx="240" cy="80" r="1.3" /><circle cx="240" cy="100" r="1.3" /><circle cx="230" cy="90" r="1.3" /><circle cx="250" cy="90" r="1.3" />
+          <circle cx="240" cy="200" r="1.3" /><circle cx="240" cy="220" r="1.3" /><circle cx="230" cy="210" r="1.3" /><circle cx="250" cy="210" r="1.3" />
+          <circle cx="460" cy="200" r="1.3" /><circle cx="460" cy="220" r="1.3" /><circle cx="450" cy="210" r="1.3" /><circle cx="470" cy="210" r="1.3" />
+        </g>
+
+        <!-- inline gate valve with handwheel -->
+        <g class="schem-pipe" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">
+          <path d="M134 84 L140 90 L134 96 Z M146 84 L140 90 L146 96 Z" />
+          <line x1="140" y1="84" x2="140" y2="58" />
+          <circle cx="140" cy="48" r="10" />
+          <line x1="130" y1="48" x2="150" y2="48" />
+          <line x1="140" y1="38" x2="140" y2="58" />
+          <line x1="133" y1="41" x2="147" y2="55" />
+          <line x1="133" y1="55" x2="147" y2="41" />
+        </g>
+
+        <!-- pressure gauge -->
+        <g class="schem-pipe" stroke="currentColor" stroke-width="1.5">
+          <line x1="350" y1="205" x2="350" y2="184" />
+          <circle cx="350" cy="166" r="18" />
+          <line x1="350" y1="150" x2="350" y2="154" />
+          <line x1="363" y1="157" x2="360.5" y2="159" />
+          <line x1="337" y1="157" x2="339.5" y2="159" />
+        </g>
+        <g class="schem-chrome" stroke="currentColor" stroke-width="1.75" stroke-linecap="round">
+          <line x1="350" y1="166" x2="360" y2="154" />
+        </g>
+        <circle class="schem-chrome" cx="350" cy="166" r="1.6" fill="currentColor" />
+
+        <!-- robotic arm: base flange, pivots, linkages -->
+        <g class="schem-pipe" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="90" y1="372" x2="90" y2="345" />
+          <line x1="90" y1="340" x2="205" y2="298" />
+          <line x1="205" y1="298" x2="316" y2="362" />
+        </g>
+        <g class="schem-pipe" stroke="currentColor" stroke-width="1.5">
+          <circle cx="90" cy="372" r="9" />
+          <circle cx="90" cy="340" r="7" />
+          <circle cx="205" cy="298" r="6" />
+          <circle cx="316" cy="362" r="5" />
+        </g>
+        <g fill="currentColor" class="schem-pipe">
+          <circle cx="82" cy="372" r="1.2" /><circle cx="98" cy="372" r="1.2" /><circle cx="90" cy="364" r="1.2" /><circle cx="90" cy="380" r="1.2" />
+        </g>
+
+        <!-- lidar sensor at end effector: distinct puck housing + static scan fan + point cloud + rotating sweep -->
+        <g stroke="currentColor" stroke-width="1.5" opacity="0.3">
+          <line x1="326" y1="364" x2="362" y2="336" />
+          <line x1="326" y1="364" x2="372" y2="358" />
+          <line x1="326" y1="364" x2="378" y2="384" />
+          <line x1="326" y1="364" x2="360" y2="408" />
+          <line x1="326" y1="364" x2="330" y2="418" />
+        </g>
+        <g fill="currentColor" opacity="0.5">
+          <circle cx="368" cy="332" r="1.4" /><circle cx="402" cy="342" r="1.4" /><circle cx="392" cy="368" r="1.4" />
+          <circle cx="416" cy="316" r="1.4" /><circle cx="360" cy="392" r="1.4" /><circle cx="340" cy="410" r="1.4" />
+          <circle cx="380" cy="400" r="1.4" /><circle cx="410" cy="378" r="1.4" />
+        </g>
+        <g class="lidar-sweep" opacity="0.55">
+          <line x1="326" y1="364" x2="404" y2="364" class="schem-chrome" stroke="currentColor" stroke-width="1.25" stroke-linecap="round">
+            <animateTransform attributeName="transform" type="rotate" from="0 326 364" to="360 326 364" dur="18s" repeatCount="indefinite" />
+          </line>
+        </g>
+        <!-- sensor puck housing, distinct from the round gauge dial -->
+        <g class="schem-pipe" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">
+          <path d="M317 356 H335 V364 Q335 372 326 372 Q317 372 317 364 Z" />
+        </g>
+        <circle class="schem-chrome" cx="326" cy="362" r="2" fill="currentColor" />
+      </svg>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <section id="about" class="about">
+      <div class="section-inner">
+        <h2 class="section-label">About</h2>
+        <p class="about-copy">
+          I build the data pipelines, feedback loops, and eval systems that turn AI models into products that hold up in production.
+          That work has spanned autonomous vehicles at <a href="https://nuro.ai" target="_blank" rel="noopener">Nuro</a>
+          and computer vision at scale in Amazon fulfillment centers.
+        </p>
+      </div>
+    </section>
+
+    <section id="projects" class="projects">
+      <div class="section-inner">
+        <h2 class="section-label">Projects</h2>
+        <div class="project-grid">
+
+          <article class="project-card">
+            <div class="project-head">
+              <span class="project-tag">Data Discovery</span>
+              <svg class="project-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                <circle cx="14" cy="14" r="8" />
+                <line x1="19.7" y1="19.7" x2="27" y2="27" />
+                <line x1="14" y1="9.5" x2="14" y2="18.5" />
+                <line x1="9.5" y1="14" x2="18.5" y2="14" />
+              </svg>
+            </div>
+            <h3 class="project-title">Multi-modal search infrastructure</h3>
+            <p class="project-problem">Engineering teams needed a way to find specific scenarios across massive volumes of unstructured sensor data — without manual review.</p>
+            <p class="project-outcome">Fast and precise embedding search — with natural language or image.</p>
+          </article>
+
+          <article class="project-card">
+            <div class="project-head">
+              <span class="project-tag">Autonomous Ops</span>
+              <svg class="project-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                <rect x="9" y="5" width="14" height="22" rx="2" />
+                <circle cx="9" cy="10.5" r="1.8" />
+                <circle cx="23" cy="10.5" r="1.8" />
+                <circle cx="9" cy="21.5" r="1.8" />
+                <circle cx="23" cy="21.5" r="1.8" />
+              </svg>
+            </div>
+            <h3 class="project-title">Fleet optimization for data collection</h3>
+            <p class="project-problem">Data collection throughput was constrained by fleet scheduling, allocation, and sensor reliability.</p>
+            <p class="project-outcome">Ops management tooling, automated troubleshooting, and route targeting.</p>
+          </article>
+
+          <article class="project-card">
+            <div class="project-head">
+              <span class="project-tag">Training Data</span>
+              <svg class="project-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                <path d="M6 12 V6 H12" />
+                <path d="M20 6 H26 V12" />
+                <path d="M26 20 V26 H20" />
+                <path d="M12 26 H6 V20" />
+                <circle cx="16" cy="16" r="1.7" fill="currentColor" stroke="none" />
+              </svg>
+            </div>
+            <h3 class="project-title">Data annotation tooling</h3>
+            <p class="project-problem">Labeling was a bottleneck on both scale and consistency for training data.</p>
+            <p class="project-outcome">Auto and LLM-based labeling infra, augmented with human judgement.</p>
+          </article>
+
+          <article class="project-card">
+            <div class="project-head">
+              <span class="project-tag">Quality Inspection</span>
+              <svg class="project-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                <rect x="6" y="6" width="20" height="20" rx="1.5" />
+                <circle cx="20" cy="12" r="2.2" />
+                <line x1="20" y1="7.6" x2="20" y2="9.4" />
+                <line x1="20" y1="14.6" x2="20" y2="16.4" />
+                <line x1="15.6" y1="12" x2="17.4" y2="12" />
+                <line x1="22.6" y1="12" x2="24.4" y2="12" />
+              </svg>
+            </div>
+            <h3 class="project-title">Computer vision for defect detection</h3>
+            <p class="project-problem">Manual inspection couldn't scale to catch product-quality issues across high-volume operations.</p>
+            <p class="project-outcome">Deep learning models to identify anomalies and reduce manual review.</p>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <section id="currently" class="currently">
+      <div class="section-inner">
+        <h2 class="section-label">Currently</h2>
+        <div class="currently-grid">
+
+          <!-- TODO: wire up real GoodReads link/embed -->
+          <a class="currently-card" href="#" target="_blank" rel="noopener" aria-label="What I'm reading — GoodReads, link to be added">
+            <span class="currently-kicker">What I'm Reading</span>
+            <span class="currently-value">GoodReads — TODO</span>
+          </a>
+
+          <!-- Populated client-side from data/currently-listening.json,
+               refreshed hourly by .github/workflows/update-spotify.yml
+               (see scripts/fetch-latest-podcast.js). Falls back to this
+               static text if that data isn't available. -->
+          <a class="currently-card" id="spotify-card" href="https://open.spotify.com" target="_blank" rel="noopener" aria-label="What I'm listening to on Spotify">
+            <span class="currently-kicker">What I'm Listening To</span>
+            <span class="currently-value">Spotify</span>
+          </a>
+
+          <!-- TODO: wire up real Twitter/X profile link -->
+          <a class="currently-card" href="#" target="_blank" rel="noopener" aria-label="Twitter/X profile, link to be added">
+            <span class="currently-kicker">Elsewhere</span>
+            <span class="currently-value">Twitter / X — TODO</span>
+          </a>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer id="footer" class="footer">
+    <!-- Thin echo of the hero schematic: pipe run, flange, valve, gauge -->
+    <svg class="footer-schem" viewBox="0 0 1200 32" preserveAspectRatio="xMidYMid meet" fill="none" aria-hidden="true" focusable="false">
+      <g stroke="currentColor" stroke-width="1.25" opacity="0.5">
+        <line x1="0" y1="13" x2="1200" y2="13" />
+        <line x1="0" y1="21" x2="1200" y2="21" />
+      </g>
+      <g stroke="currentColor" stroke-width="1.25" opacity="0.6">
+        <circle cx="240" cy="17" r="9" />
+        <circle cx="240" cy="8" r="1.3" fill="currentColor" />
+        <circle cx="240" cy="26" r="1.3" fill="currentColor" />
+        <circle cx="231" cy="17" r="1.3" fill="currentColor" />
+        <circle cx="249" cy="17" r="1.3" fill="currentColor" />
+      </g>
+      <g stroke="currentColor" stroke-width="1.25" stroke-linejoin="round" opacity="0.6">
+        <path d="M732 9 L740 17 L732 25 Z M748 9 L740 17 L748 25 Z" />
+      </g>
+      <g stroke="currentColor" stroke-width="1.25" opacity="0.55">
+        <circle cx="980" cy="17" r="12" />
+        <line x1="980" y1="17" x2="990" y2="7" />
+      </g>
+    </svg>
+    <div class="section-inner footer-inner">
+      <a href="https://www.linkedin.com/in/carlbetzler/" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="mailto:cbbetzler@gmail.com">cbbetzler@gmail.com</a>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
