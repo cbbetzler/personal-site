@@ -48,7 +48,11 @@ async function getAccessToken() {
 async function main() {
   const accessToken = await getAccessToken();
 
-  const res = await fetch("https://api.spotify.com/v1/me/player/currently-playing", {
+  // Using the full player-state endpoint rather than /currently-playing:
+  // currently-playing was observed returning currently_playing_type:
+  // "episode" with item: null (a known Spotify API gap for podcasts) —
+  // testing whether this endpoint returns complete episode metadata instead.
+  const res = await fetch("https://api.spotify.com/v1/me/player", {
     headers: { Authorization: `Bearer ${accessToken}` },
   });
 

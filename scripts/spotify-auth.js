@@ -19,7 +19,7 @@ const { URL } = require("url");
 
 const PORT = 8888;
 const REDIRECT_URI = `http://127.0.0.1:${PORT}/callback`;
-const SCOPE = "user-read-currently-playing";
+const SCOPE = "user-read-playback-state";
 
 const clientId = process.env.SPOTIFY_CLIENT_ID;
 const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
