@@ -55,6 +55,23 @@ async function main() {
   const data = await res.json();
 
   const items = data.items || [];
+
+  // TEMP DEBUG: remove once we've confirmed episodes show up here.
+  console.log(
+    "recently-played raw items:",
+    JSON.stringify(
+      items.map((i) => ({
+        name: i.track && i.track.name,
+        type: i.track && i.track.type,
+        hasShow: Boolean(i.track && i.track.show),
+        hasAlbum: Boolean(i.track && i.track.album),
+        playedAt: i.played_at,
+      })),
+      null,
+      2
+    )
+  );
+
   const latestEpisode = items.find(isEpisode);
 
   if (!latestEpisode) {
