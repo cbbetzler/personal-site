@@ -68,8 +68,19 @@ async function main() {
 
   if (data.currently_playing_type !== "episode" || !data.item) {
     // TEMP DEBUG: currently_playing_type has come back "episode" with a
-    // falsy item before — dump the raw response to see why.
+    // falsy item before, regardless of device — try /player/queue too,
+    // which sometimes populates `currently_playing` where /me/player doesn't.
     console.log("TEMP DEBUG raw currently-playing response:", JSON.stringify(data, null, 2));
+
+    const queueRes = await fetch("https://api.spotify.com/v1/me/player/queue", {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    console.log("TEMP DEBUG queue endpoint status:", queueRes.status);
+    if (queueRes.ok) {
+      const queueData = await queueRes.json();
+      console.log("TEMP DEBUG queue currently_playing:", JSON.stringify(queueData.currently_playing, null, 2));
+    }
+
     console.log(`Currently playing "${data.currently_playing_type}", not a podcast — leaving existing data as-is.`);
     return;
   }
