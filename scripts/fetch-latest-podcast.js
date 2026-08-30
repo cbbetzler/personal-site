@@ -54,6 +54,29 @@ async function main() {
   });
   const data = await res.json();
 
+  // TEMP DEBUG: check currently-playing too, to see if episodes show up there
+  // even when they don't show up in recently-played.
+  const cpRes = await fetch("https://api.spotify.com/v1/me/player/currently-playing", {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+  console.log("currently-playing status:", cpRes.status);
+  if (cpRes.status === 200) {
+    const cpData = await cpRes.json();
+    console.log(
+      "currently-playing:",
+      JSON.stringify(
+        {
+          currently_playing_type: cpData.currently_playing_type,
+          is_playing: cpData.is_playing,
+          itemName: cpData.item && cpData.item.name,
+          itemType: cpData.item && cpData.item.type,
+        },
+        null,
+        2
+      )
+    );
+  }
+
   const items = data.items || [];
 
   // TEMP DEBUG: remove once we've confirmed episodes show up here.
