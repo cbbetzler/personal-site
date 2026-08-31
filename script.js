@@ -62,3 +62,46 @@
       // Leave the static placeholder in place.
     });
 })();
+
+// Populate "What I'm Reading" with up to 3 books from the currently-reading
+// shelf, kept fresh by a scheduled GitHub Action (see
+// scripts/fetch-goodreads.js). Falls back silently to the static profile
+// link if the data file is missing or empty (e.g. before the first Action
+// run).
+(function () {
+  var list = document.getElementById("reading-list");
+  if (!list) return;
+
+  fetch("data/currently-reading.json", { cache: "no-store" })
+    .then(function (res) {
+      if (!res.ok) throw new Error("no data yet");
+      return res.json();
+    })
+    .then(function (books) {
+      if (!Array.isArray(books) || !books.length) return;
+
+      list.innerHTML = "";
+      books.forEach(function (book) {
+        if (!book || !book.title || !book.url) return;
+        var li = document.createElement("li");
+        li.className = "reading-item";
+        var a = document.createElement("a");
+        a.href = book.url;
+        a.target = "_blank";
+        a.rel = "noopener";
+        a.textContent = book.title;
+        if (book.author) {
+          a.append(document.createTextNode(" "));
+          var authorEl = document.createElement("span");
+          authorEl.className = "reading-author";
+          authorEl.textContent = "— " + book.author;
+          a.appendChild(authorEl);
+        }
+        li.appendChild(a);
+        list.appendChild(li);
+      });
+    })
+    .catch(function () {
+      // Leave the static placeholder in place.
+    });
+})();

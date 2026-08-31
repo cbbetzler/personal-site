@@ -468,6 +468,30 @@ button:focus-visible {
   font-weight: 600;
 }
 
+.reading-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.reading-item a {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.reading-item a:hover {
+  color: var(--chrome);
+}
+
+.reading-item .reading-author {
+  font-weight: 400;
+  color: var(--text-dim);
+}
+
 /* ===== Footer ===== */
 .footer {
   border-top: 1px solid var(--border);

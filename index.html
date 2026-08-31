@@ -243,11 +243,18 @@
         <h2 class="section-label">Currently</h2>
         <div class="currently-grid">
 
-          <!-- TODO: wire up real GoodReads link/embed -->
-          <a class="currently-card" href="#" target="_blank" rel="noopener" aria-label="What I'm reading — GoodReads, link to be added">
+          <!-- Populated client-side from data/currently-reading.json,
+               refreshed every 6 hours by .github/workflows/update-goodreads.yml
+               (see scripts/fetch-goodreads.js). Falls back to a plain
+               profile link if that data isn't available. -->
+          <div class="currently-card" id="goodreads-card">
             <span class="currently-kicker">What I'm Reading</span>
-            <span class="currently-value">GoodReads — TODO</span>
-          </a>
+            <ul class="reading-list" id="reading-list">
+              <li class="reading-item">
+                <a href="https://www.goodreads.com/user/show/123192008-carl-betzler" target="_blank" rel="noopener">Goodreads</a>
+              </li>
+            </ul>
+          </div>
 
           <!-- Populated client-side from data/currently-listening.json,
                refreshed hourly by .github/workflows/update-spotify.yml
