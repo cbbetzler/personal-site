@@ -455,12 +455,31 @@ button:focus-visible {
   text-decoration: none;
 }
 
+.currently-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
 .currently-kicker {
   font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-dim);
+}
+
+.currently-icon {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  color: var(--accent);
+  transition: color 0.15s ease;
+}
+
+.currently-card:hover .currently-icon {
+  color: var(--chrome);
 }
 
 .currently-value {
