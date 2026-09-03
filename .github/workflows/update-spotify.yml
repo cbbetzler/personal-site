@@ -2,7 +2,12 @@ name: Update currently-listening podcast
 
 on:
   schedule:
-    - cron: "*/15 * * * *" # every 15 min — currently-playing only catches active sessions
+    # GitHub Actions cron always runs in UTC and doesn't shift for DST, so
+    # each window below is padded an extra hour on both ends to fully cover
+    # 8-10am and 5-8pm Pacific across both PST (UTC-8) and PDT (UTC-7)
+    # without needing manual edits twice a year.
+    - cron: "*/10 15-18 * * *" # ~7-11am Pacific
+    - cron: "*/10 0-4 * * *" # ~4-9pm Pacific (UTC crosses midnight)
   workflow_dispatch: {}
 
 permissions:
