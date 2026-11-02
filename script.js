@@ -64,10 +64,9 @@
 })();
 
 // Populate "What I'm Reading" with up to 3 books from the currently-reading
-// shelf, kept fresh by a scheduled GitHub Action (see
-// scripts/fetch-goodreads.js). Falls back silently to the static profile
-// link if the data file is missing or empty (e.g. before the first Action
-// run).
+// shelf, edited by hand in data/currently-reading.json (checked by
+// scripts/validate-currently-reading.js). Falls back silently to the static
+// profile link if the data file is missing or empty.
 (function () {
   var list = document.getElementById("reading-list");
   if (!list) return;
