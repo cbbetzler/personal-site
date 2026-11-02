@@ -1,0 +1,88 @@
+name: Deploy site
+
+# Syncs the browser-facing files (index.html, styles.css, script.js, assets/,
+# data/*.json) to the private S3 bucket behind CloudFront, then invalidates
+# the cache. Called by the data workflows after they commit, and runs on
+# Carl's own pushes of site files. Bot commits pushed with GITHUB_TOKEN never
+# fire the push trigger, so they're only deployed by the explicit call.
+on:
+  workflow_call:
+    inputs:
+      scope:
+        description: "data = data/*.json only, full = whole site"
+        type: string
+        default: full
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: "data = data/*.json only, full = whole site"
+        type: choice
+        options: [full, data]
+        default: full
+  push:
+    branches: [main]
+    paths:
+      - index.html
+      - styles.css
+      - script.js
+      - assets/**
+      - data/**
+
+env:
+  # Not secrets: the role is only assumable by this repo via GitHub OIDC.
+  ROLE_ARN: arn:aws:iam::725111222480:role/github-actions-personal-site-deploy
+  AWS_REGION: us-east-1
+  BUCKET: carlbetzler.com
+  DISTRIBUTION_ID: EY2OXEPF0XA32
+  SCOPE: ${{ inputs.scope || 'full' }}
+
+jobs:
+  deploy:
+    # Belt and braces against a double deploy of a bot commit.
+    if: github.event_name != 'push' || github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    # Runs deploy one at a time. A newer queued run replaces an older queued
+    # one, which is fine since every run deploys the latest main.
+    concurrency:
+      group: deploy-site
+      cancel-in-progress: false
+    steps:
+      # Deploy the latest main, not the (possibly stale) ref the caller
+      # started from.
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+
+      - name: Validate data/currently-reading.json
+        run: node scripts/validate-currently-reading.js
+
+      - uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ env.ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Sync data
+        run: >
+          aws s3 sync data "s3://$BUCKET/data"
+          --exclude "*" --include "*.json"
+          --cache-control "public, max-age=60"
+
+      - name: Sync site files
+        if: env.SCOPE == 'full'
+        run: |
+          aws s3 sync assets "s3://$BUCKET/assets" \
+            --cache-control "public, max-age=86400"
+          aws s3 sync . "s3://$BUCKET" \
+            --exclude "*" --include index.html --include styles.css --include script.js \
+            --cache-control "public, max-age=300"
+
+      - name: Invalidate CloudFront
+        run: |
+          if [ "$SCOPE" = full ]; then paths="/*"; else paths="/data/*"; fi
+          id=$(aws cloudfront create-invalidation --distribution-id "$DISTRIBUTION_ID" \
+            --paths "$paths" --query Invalidation.Id --output text)
+          echo "Invalidation $id for $paths"
+          aws cloudfront wait invalidation-completed --distribution-id "$DISTRIBUTION_ID" --id "$id"
