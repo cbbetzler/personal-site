@@ -2,12 +2,14 @@ name: Update currently-listening podcast
 
 on:
   schedule:
-    # GitHub Actions cron always runs in UTC and doesn't shift for DST, so
-    # each window below is padded an extra hour on both ends to fully cover
-    # 8-10am and 5-8pm Pacific across both PST (UTC-8) and PDT (UTC-7)
-    # without needing manual edits twice a year.
-    - cron: "*/10 15-18 * * *" # ~7-11am Pacific
-    - cron: "*/10 0-4 * * *" # ~4-9pm Pacific (UTC crosses midnight)
+    # Podcasts can only be caught while playing, so runs target the usual
+    # listening windows, 7:30-9:30am and 5:30-8:30pm Pacific. Music comes from
+    # recently-played, so the next run picks up anything played between them.
+    # GitHub Actions cron always runs in UTC and doesn't shift for DST, so the
+    # hours below cover both PST (UTC-8) and PDT (UTC-7). Minutes avoid the top
+    # of the hour, which GitHub documents as a high-load time for schedules.
+    - cron: "7,37 14-17 * * *" # morning window
+    - cron: "7,37 0-4 * * *" # evening window (UTC crosses midnight)
   workflow_dispatch: {}
 
 permissions:

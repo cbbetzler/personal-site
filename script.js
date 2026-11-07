@@ -35,13 +35,25 @@
   });
 })();
 
-// Populate "What I'm Listening To" with the latest podcast episode, kept
-// fresh by a scheduled GitHub Action (see scripts/fetch-latest-podcast.js).
-// Falls back silently to the static placeholder if the data file is
-// missing or empty (e.g. before the first Action run).
+// Populate "What I'm Listening To" with the most recent track or podcast
+// episode, kept fresh by a scheduled GitHub Action (see
+// scripts/fetch-latest-podcast.js). Falls back silently to the static
+// placeholder if the data file is missing, empty, or over 14 days old.
 (function () {
   var card = document.getElementById("spotify-card");
   if (!card) return;
+
+  var MAX_AGE_MS = 14 * 24 * 60 * 60 * 1000;
+
+  function timeAgo(ms) {
+    var minutes = Math.floor(ms / 60000);
+    if (minutes < 1) return "just now";
+    if (minutes < 60) return minutes + (minutes === 1 ? " minute ago" : " minutes ago");
+    var hours = Math.floor(minutes / 60);
+    if (hours < 24) return hours + (hours === 1 ? " hour ago" : " hours ago");
+    var days = Math.floor(hours / 24);
+    return days + (days === 1 ? " day ago" : " days ago");
+  }
 
   fetch("data/currently-listening.json", { cache: "no-store" })
     .then(function (res) {
@@ -50,6 +62,8 @@
     })
     .then(function (data) {
       if (!data || !data.title) return;
+      var age = Math.max(0, Date.now() - Date.parse(data.playedAt || data.fetchedAt));
+      if (!(age < MAX_AGE_MS)) return;
       var valueEl = card.querySelector(".currently-value");
       if (valueEl) {
         valueEl.textContent = data.show ? data.show + " — " + data.title : data.title;
@@ -57,6 +71,10 @@
       if (data.url) {
         card.href = data.url;
       }
+      var timeEl = document.createElement("span");
+      timeEl.className = "currently-time";
+      timeEl.textContent = timeAgo(age);
+      card.appendChild(timeEl);
     })
     .catch(function () {
       // Leave the static placeholder in place.

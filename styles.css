@@ -487,6 +487,11 @@ button:focus-visible {
   font-weight: 600;
 }
 
+.currently-time {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
 .reading-list {
   list-style: none;
   margin: 0;
