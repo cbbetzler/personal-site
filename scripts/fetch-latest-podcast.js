@@ -13,7 +13,9 @@
 //      playing at the moment this runs.
 //
 // The file is only rewritten when something newer turns up, so an empty
-// result can never replace good data and unchanged runs make no commit.
+// result can never replace good data and unchanged runs make no commit. A
+// captured episode also stays up for PODCAST_HOLD_MS even if music was played
+// after it, because episodes are the harder thing to catch.
 // Real errors exit non-zero so the workflow run fails visibly.
 
 const fs = require("fs");
@@ -27,6 +29,7 @@ if (!SPOTIFY_CLIENT_ID || !SPOTIFY_CLIENT_SECRET || !SPOTIFY_REFRESH_TOKEN) {
 }
 
 const OUTPUT_PATH = path.join(__dirname, "..", "data", "currently-listening.json");
+const PODCAST_HOLD_MS = 3 * 24 * 60 * 60 * 1000;
 
 async function getAccessToken() {
   const res = await fetch("https://accounts.spotify.com/api/token", {
@@ -132,6 +135,10 @@ async function main() {
   const existingTime = existing ? Date.parse(existing.playedAt || existing.updatedAt) : NaN;
   if (Date.parse(entry.playedAt) <= existingTime) {
     console.log(`Nothing newer than ${existing.playedAt || existing.updatedAt} — leaving existing data as-is.`);
+    return;
+  }
+  if (entry.type === "track" && existing && existing.type === "episode" && Date.now() - existingTime < PODCAST_HOLD_MS) {
+    console.log(`Keeping episode from ${existing.playedAt} over newer music — leaving existing data as-is.`);
     return;
   }
 
