@@ -7,7 +7,8 @@
 // Two sources, newest wins:
 //   1. GET /v1/me/player?additional_types=episode: whatever is playing right
 //      now, music or podcast. If `item` is null for an episode, falls back
-//      to the `currently_playing` field of GET /v1/me/player/queue.
+//      to the `currently_playing` field of GET /v1/me/player/queue. A paused
+//      episode counts too, dated by when it was paused.
 //   2. GET /v1/me/player/recently-played: finished tracks. Spotify doesn't
 //      include podcast episodes here, so an episode is only captured if it's
 //      playing at the moment this runs.
@@ -91,17 +92,50 @@ function toEntry(item, playedAt) {
 
 async function getNowPlaying(accessToken, now) {
   const state = await spotifyGet(accessToken, "/me/player?additional_types=episode");
-  if (!state || !state.is_playing) return null;
+  // Logged on every run so a missed podcast can be diagnosed from the
+  // Actions log instead of guessed at.
+  console.log(
+    "Player state:",
+    state
+      ? JSON.stringify({
+          is_playing: state.is_playing,
+          currently_playing_type: state.currently_playing_type,
+          item_type: state.item ? state.item.type : null,
+          item_name: state.item ? state.item.name : null,
+          device: state.device ? state.device.type : null,
+          timestamp: state.timestamp ? new Date(state.timestamp).toISOString() : null,
+        })
+      : "204 (no active device)"
+  );
+  if (!state) return null;
 
-  const type = state.currently_playing_type;
-  if (type !== "track" && type !== "episode") return null; // ad or unknown
+  const reportedType = state.currently_playing_type;
+  if (reportedType === "ad") return null;
 
+  // Spotify sometimes reports "unknown" for episodes, and sometimes returns
+  // a null item for them, so trust the item's own type when there is one and
+  // otherwise ask the queue endpoint.
   let item = state.item;
-  if (!item && type === "episode") {
-    const queue = await spotifyGet(accessToken, "/me/player/queue");
-    item = queue && queue.currently_playing;
+  if (!item && (reportedType === "episode" || reportedType === "unknown")) {
+    try {
+      const queue = await spotifyGet(accessToken, "/me/player/queue");
+      item = queue && queue.currently_playing;
+    } catch (err) {
+      console.log(`Queue fallback failed: ${err.message}`);
+    }
   }
-  return toEntry(item, now);
+  if (!item || (item.type !== "track" && item.type !== "episode")) return null;
+
+  if (state.is_playing) return toEntry(item, now);
+
+  // A paused episode is still the most recent thing listened to, which is
+  // a common case for podcasts. state.timestamp is when playback state last
+  // changed, so it is roughly when it was paused. Paused tracks are left to
+  // recently-played, which already covers them.
+  if (item.type === "episode" && state.timestamp) {
+    return toEntry(item, new Date(Math.min(state.timestamp, Date.parse(now))).toISOString());
+  }
+  return null;
 }
 
 async function getLastPlayed(accessToken) {
@@ -123,7 +157,10 @@ async function main() {
   const accessToken = await getAccessToken();
   const now = new Date().toISOString();
 
-  const entry = (await getNowPlaying(accessToken, now)) || (await getLastPlayed(accessToken));
+  // A paused episode carries its pause time, so compare against
+  // recently-played rather than letting now-playing win outright.
+  const candidates = [await getNowPlaying(accessToken, now), await getLastPlayed(accessToken)].filter(Boolean);
+  const entry = candidates.sort((a, b) => Date.parse(b.playedAt) - Date.parse(a.playedAt))[0];
   if (!entry) {
     console.log("Spotify returned nothing playing and no history — leaving existing data as-is.");
     return;
