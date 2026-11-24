@@ -492,6 +492,19 @@ button:focus-visible {
   color: var(--text-dim);
 }
 
+.currently-line {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.currently-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
 .reading-list {
   list-style: none;
   margin: 0;

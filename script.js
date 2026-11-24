@@ -35,10 +35,11 @@
   });
 })();
 
-// Populate "What I'm Listening To" with the most recent track or podcast
-// episode, kept fresh by a scheduled GitHub Action (see
-// scripts/fetch-latest-podcast.js). Falls back silently to the static
-// placeholder if the data file is missing, empty, or over 14 days old.
+// Populate "What I'm Listening To" with the most recent music track and the
+// most recent podcast episode, kept fresh by a scheduled GitHub Action (see
+// scripts/fetch-latest-podcast.js). Each line is dropped if it is over 14
+// days old; the card falls back silently to the static placeholder if the
+// data file is missing or nothing in it is recent.
 (function () {
   var card = document.getElementById("spotify-card");
   if (!card) return;
@@ -55,26 +56,49 @@
     return days + (days === 1 ? " day ago" : " days ago");
   }
 
+  function ageOf(entry) {
+    return Math.max(0, Date.now() - Date.parse(entry.playedAt));
+  }
+
   fetch("data/currently-listening.json", { cache: "no-store" })
     .then(function (res) {
       if (!res.ok) throw new Error("no data yet");
       return res.json();
     })
     .then(function (data) {
-      if (!data || !data.title) return;
-      var age = Math.max(0, Date.now() - Date.parse(data.playedAt || data.fetchedAt));
-      if (!(age < MAX_AGE_MS)) return;
+      if (!data) return;
+      // Older files held a single entry rather than { music, podcast }.
+      var entries = data.title
+        ? [data]
+        : [data.music, data.podcast];
+      entries = entries.filter(function (entry) {
+        return entry && entry.title && ageOf(entry) < MAX_AGE_MS;
+      });
+      if (!entries.length) return;
+
+      // The card is one link, so it goes to whichever was played last.
+      var newest = entries.slice().sort(function (a, b) {
+        return ageOf(a) - ageOf(b);
+      })[0];
+      if (newest.url) card.href = newest.url;
+
       var valueEl = card.querySelector(".currently-value");
-      if (valueEl) {
-        valueEl.textContent = data.show ? data.show + " — " + data.title : data.title;
-      }
-      if (data.url) {
-        card.href = data.url;
-      }
-      var timeEl = document.createElement("span");
-      timeEl.className = "currently-time";
-      timeEl.textContent = timeAgo(age);
-      card.appendChild(timeEl);
+      if (valueEl) valueEl.remove();
+      entries.forEach(function (entry) {
+        var line = document.createElement("span");
+        line.className = "currently-line";
+        var label = document.createElement("span");
+        label.className = "currently-label";
+        label.textContent = entry.type === "episode" ? "Podcast" : "Music";
+        var value = document.createElement("span");
+        value.className = "currently-value";
+        value.textContent = entry.show ? entry.show + " — " + entry.title : entry.title;
+        var timeEl = document.createElement("span");
+        timeEl.className = "currently-time";
+        timeEl.textContent = timeAgo(ageOf(entry));
+        line.append(label, value, timeEl);
+        card.appendChild(line);
+      });
     })
     .catch(function () {
       // Leave the static placeholder in place.

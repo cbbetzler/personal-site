@@ -2,18 +2,22 @@ name: Update currently-listening podcast
 
 on:
   schedule:
-    # Podcasts can only be caught while playing, so runs target the usual
-    # listening windows, 7:30-9:30am and 5:30-8:30pm Pacific. Music comes from
-    # recently-played, so the next run picks up anything played between them.
-    # GitHub Actions cron always runs in UTC and doesn't shift for DST, so the
-    # hours below cover both PST (UTC-8) and PDT (UTC-7). Minutes avoid the top
-    # of the hour, which GitHub documents as a high-load time for schedules.
-    - cron: "7,37 14-17 * * *" # morning window
-    - cron: "7,37 0-4 * * *" # evening window (UTC crosses midnight)
+    # Hourly. GitHub delays and drops scheduled runs under load (in practice
+    # only ~2 of the 18 runs a day the old listening-window crons asked for
+    # ever ran), so timing can't be targeted. Podcasts no longer depend on it:
+    # episode progress is compared between runs. Minute 17 avoids the top of
+    # the hour, which GitHub documents as a high-load time for schedules.
+    - cron: "17 * * * *"
   workflow_dispatch: {}
 
 permissions:
   contents: write
+
+# Runs one at a time so two runs never compare against the same saved
+# episode positions.
+concurrency:
+  group: update-spotify
+  cancel-in-progress: false
 
 jobs:
   update:
@@ -27,7 +31,7 @@ jobs:
         with:
           node-version: 24
 
-      - name: Fetch latest podcast episode
+      - name: Fetch latest music and podcast episode
         env:
           # Client ID is a public identifier, safe to commit — only the
           # secret and refresh token are sensitive and live in repo secrets.
@@ -41,15 +45,18 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/currently-listening.json
+          git add data/currently-listening.json state/spotify-episode-positions.json
           if git diff --cached --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          git commit -m "chore: update currently-listening podcast"
+          # Only a change to the site data needs a deploy; saved episode
+          # positions alone (state/) are committed but not deployed.
+          if git diff --cached --quiet -- data/; then changed=false; else changed=true; fi
+          git commit -m "chore: update currently-listening data"
           git pull --rebase origin main
           git push
-          echo "changed=true" >> "$GITHUB_OUTPUT"
+          echo "changed=$changed" >> "$GITHUB_OUTPUT"
 
   # Pushes made with GITHUB_TOKEN don't trigger other workflows, so the
   # deploy has to be called explicitly rather than relying on deploy.yml's

@@ -19,7 +19,17 @@ const { URL } = require("url");
 
 const PORT = 8888;
 const REDIRECT_URI = `http://127.0.0.1:${PORT}/callback`;
-const SCOPE = "user-read-playback-state user-read-currently-playing user-read-recently-played";
+// user-library-read and user-read-playback-position let the fetch script see
+// saved shows and episode progress, which is how podcasts are detected
+// (recently-played doesn't include episodes). Keep in sync with
+// REQUIRED_SCOPES in scripts/fetch-latest-podcast.js.
+const SCOPE = [
+  "user-read-playback-state",
+  "user-read-currently-playing",
+  "user-read-recently-played",
+  "user-library-read",
+  "user-read-playback-position",
+].join(" ");
 
 const clientId = process.env.SPOTIFY_CLIENT_ID;
 const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
