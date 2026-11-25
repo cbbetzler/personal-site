@@ -1,11 +1,11 @@
 {
   "music": {
     "type": "track",
-    "title": "Crying on Eddie Nash's Grave",
-    "show": "The Mountain Goats",
-    "url": "https://open.spotify.com/track/5yJHihVpTn2ZHdwwESXSvy",
-    "image": "https://i.scdn.co/image/ab67616d0000b273b19e9ef5657be6ba9af870cd",
-    "playedAt": "2026-11-24T07:53:54.665Z"
+    "title": "Paul Revere (with Gregory Alan Isakov)",
+    "show": "Noah Kahan, Gregory Alan Isakov",
+    "url": "https://open.spotify.com/track/6BTAzOm96NwuGXhfHqWYM4",
+    "image": "https://i.scdn.co/image/ab67616d0000b273ba6fb0a7e6c53fb8faa96226",
+    "playedAt": "2026-11-25T07:19:08.080Z"
   },
   "podcast": {
     "type": "episode",
@@ -15,5 +15,5 @@
     "image": "https://i.scdn.co/image/ab6765630000ba8a1ba65db4d4d8faaab9532539",
     "playedAt": "2026-11-25T03:34:02.926Z"
   },
-  "fetchedAt": "2026-11-25T03:34:02.926Z"
+  "fetchedAt": "2026-11-25T14:27:06.159Z"
 }
