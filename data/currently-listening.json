@@ -1,11 +1,11 @@
 {
   "music": {
     "type": "track",
-    "title": "Paul Revere (with Gregory Alan Isakov)",
-    "show": "Noah Kahan, Gregory Alan Isakov",
-    "url": "https://open.spotify.com/track/6BTAzOm96NwuGXhfHqWYM4",
-    "image": "https://i.scdn.co/image/ab67616d0000b273ba6fb0a7e6c53fb8faa96226",
-    "playedAt": "2026-11-25T07:19:08.080Z"
+    "title": "Girl",
+    "show": "Jukebox The Ghost",
+    "url": "https://open.spotify.com/track/63OB8oKmBUUYiRtrRtFCvX",
+    "image": "https://i.scdn.co/image/ab67616d0000b273e39924311bcd74bcd9f8dde1",
+    "playedAt": "2026-11-26T02:59:56.525Z"
   },
   "podcast": {
     "type": "episode",
@@ -13,7 +13,7 @@
     "show": "The Daily",
     "url": "https://open.spotify.com/episode/6mF5LibvMpHU0gXyBzBbHD",
     "image": "https://i.scdn.co/image/ab6765630000ba8a5f97e25760184b6d92a1b6d2",
-    "playedAt": "2026-11-25T23:39:12.542Z"
+    "playedAt": "2026-11-26T08:25:09.881Z"
   },
-  "fetchedAt": "2026-11-25T23:39:12.542Z"
+  "fetchedAt": "2026-11-26T08:25:09.881Z"
 }
