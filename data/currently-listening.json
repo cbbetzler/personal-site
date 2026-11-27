@@ -1,11 +1,11 @@
 {
   "music": {
     "type": "track",
-    "title": "Stranger",
-    "show": "The New Basement Tapes",
-    "url": "https://open.spotify.com/track/7cTg6EhXaeZ96NszCpgIju",
-    "image": "https://i.scdn.co/image/ab67616d0000b273e81124204c88882d0343eaee",
-    "playedAt": "2026-11-27T02:14:07.590Z"
+    "title": "Maine",
+    "show": "Noah Kahan",
+    "url": "https://open.spotify.com/track/3Z2anmIVG8b1GelyeFQdnP",
+    "image": "https://i.scdn.co/image/ab67616d0000b2739bdf7ddd51003bc6b491ce73",
+    "playedAt": "2026-11-27T05:12:46.609Z"
   },
   "podcast": {
     "type": "episode",
@@ -15,5 +15,5 @@
     "image": "https://i.scdn.co/image/ab6765630000ba8a5f97e25760184b6d92a1b6d2",
     "playedAt": "2026-11-27T02:14:07.590Z"
   },
-  "fetchedAt": "2026-11-27T02:14:07.590Z"
+  "fetchedAt": "2026-11-27T10:58:13.328Z"
 }
