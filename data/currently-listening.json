@@ -1,11 +1,11 @@
 {
   "music": {
     "type": "track",
-    "title": "Staying Still",
+    "title": "Orange Juice",
     "show": "Noah Kahan",
-    "url": "https://open.spotify.com/track/35po0dhj4pRkbVDeooNVBW",
-    "image": "https://i.scdn.co/image/ab67616d0000b273c39789e2dbdad5af5736e07a",
-    "playedAt": "2026-11-28T02:43:39.946Z"
+    "url": "https://open.spotify.com/track/07UFnnK3uPIuKv5Rs9TmXl",
+    "image": "https://i.scdn.co/image/ab67616d0000b2736ee35072df1af802cca09918",
+    "playedAt": "2026-11-28T03:22:11.730Z"
   },
   "podcast": {
     "type": "episode",
@@ -15,5 +15,5 @@
     "image": "https://i.scdn.co/image/ab6765630000ba8aec6420b46053b5d1786dbe05",
     "playedAt": "2026-11-27T19:59:09.635Z"
   },
-  "fetchedAt": "2026-11-28T02:43:39.946Z"
+  "fetchedAt": "2026-11-28T11:51:27.095Z"
 }
