@@ -1,11 +1,11 @@
 {
   "music": {
     "type": "track",
-    "title": "Wild",
-    "show": "Spoon",
-    "url": "https://open.spotify.com/track/05uhED0miR9OJYPalPi7tx",
-    "image": "https://i.scdn.co/image/ab67616d0000b27397242ae40513133fe4e71ab1",
-    "playedAt": "2026-11-27T05:16:50.142Z"
+    "title": "Staying Still",
+    "show": "Noah Kahan",
+    "url": "https://open.spotify.com/track/35po0dhj4pRkbVDeooNVBW",
+    "image": "https://i.scdn.co/image/ab67616d0000b273c39789e2dbdad5af5736e07a",
+    "playedAt": "2026-11-28T02:43:39.946Z"
   },
   "podcast": {
     "type": "episode",
@@ -15,5 +15,5 @@
     "image": "https://i.scdn.co/image/ab6765630000ba8aec6420b46053b5d1786dbe05",
     "playedAt": "2026-11-27T19:59:09.635Z"
   },
-  "fetchedAt": "2026-11-27T19:59:09.635Z"
+  "fetchedAt": "2026-11-28T02:43:39.946Z"
 }
